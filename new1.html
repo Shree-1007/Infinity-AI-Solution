@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infinity AI Solutions</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Updated font */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #2c2c2c; /* Slightly lighter dark background */
+            color: #f4f4f4;
+        }
+        .container {
+            width: 80%;
+            max-width: 800px;
+            margin: auto;
+            padding: 30px; /* Increased vertical padding */
+            background: #1e1e1e; /* Darker background for the container */
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            height: 80vh; /* Increased container height */
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .header .logo {
+            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            margin-right: 20px;
+        }
+        .header h1 {
+            margin: 0;
+            color: #f4f4f4;
+        }
+        #chat {
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 10px;
+            flex: 1; /* Allows chat box to grow */
+            overflow-y: auto;
+            background: #333;
+        }
+        .message {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+        .message.user {
+            text-align: right;
+            color: #a1c4fd;
+            background: #2a2a2a;
+        }
+        .message.bot {
+            text-align: left;
+            color: #c4e1c1;
+            background: #4a4a4a;
+        }
+        form {
+            display: flex;
+            margin-top: 10px;
+        }
+        input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #444;
+            border-radius: 20px;
+            background: #2e2e2e;
+            color: #f4f4f4;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #ff6b6b, #ffcc00); /* Gradient color for the button */
+            color: white;
+            cursor: pointer;
+            margin-left: 10px;
+            font-size: 18px; /* Increased font size */
+        }
+        button:hover {
+            background: linear-gradient(135deg, #e55d5d, #e6b800); /* Slightly darker gradient for hover */
+        }
+        button:active {
+            background: linear-gradient(135deg, #cc4b4b, #d4a700); /* Even darker gradient for active state */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="https://github.com/Infinity000007/card/blob/main/WhatsApp%20Image%202024-09-02%20at%202.16.53%20PM.jpeg?raw=true" alt="Infinity AI Solutions Logo" class="logo">
+            <h1>Infinity AI Solutions</h1>
+        </div>
+        <div id="chat" class="chat-box">
+            <!-- Chat messages will be displayed here -->
+        </div>
+        <form id="chat-form">
+            <input type="text" id="message" name="msg" placeholder="Type your message here..." required>
+            <button type="submit">Send</button>
+        </form>
+    </div>
+
+    <script>
+        const form = document.getElementById('chat-form');
+        const chatBox = document.getElementById('chat');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const messageInput = document.getElementById('message');
+            const userMessage = messageInput.value;
+
+            // Add user message to chat
+            chatBox.innerHTML += `<div class="message user">${userMessage}</div>`;
+            messageInput.value = '';
+
+            // Send message to the FastAPI backend
+            const response = await fetch('/get', {
+                method: 'POST',
+                body: new URLSearchParams({ msg: userMessage }),
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const botMessage = data.response;
+
+                // Add bot response to chat
+                chatBox.innerHTML += `<div class="message bot">${botMessage}</div>`;
+                chatBox.scrollTop = chatBox.scrollHeight; // Scroll to bottom
+            } else {
+                console.error('Error:', response.statusText);
+            }
+        });
+    </script>
+</body>
+</html>
